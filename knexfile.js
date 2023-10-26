@@ -10,7 +10,7 @@ module.exports = {
     client: 'pg',
     connection: {
       host: 'localhost',
-      port: '5432',
+      port: '5433',
       database: 'kanji_panda',
       user:     'postgres',
       password: process.env.NODE_DB_PASS
