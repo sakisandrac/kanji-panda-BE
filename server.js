@@ -8,17 +8,18 @@ const database = require('knex')(configuration);
 app.locals = { title: 'Kanji Panda API' }
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
-const { user } = require('pg/lib/defaults');
 
 //MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
 //GET ENDPOINTS
-// GET ENDPOINTS
-app.get('/api/v1/user/', async (req, res) => {
+app.get('/api/v1/kanji/:user_id', async (req, res) => {
+    const { user_id } = req.body;
     try {
-      console.log('hello')
+      const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
+    //   const savedKanji = await database('kanji').select().where().
+
       res.status(200).json("hello");
     } catch (error) {
       res.status(500).json({ error })
@@ -64,6 +65,48 @@ app.post('/api/v1/user/', async (req, res) => {
         res.status(500).json({ error })
     }
 })
+
+app.post('/api/v1/kanji/', async (req, res) => {
+    const { user_id, k_id, k_utf, meaning, onyomi, kunyomi } = req.body;
+    const id = uuidv4();
+
+    try {
+        const kanjiExsists = await database('kanji').select().where('k_id', k_id);
+        console.log('kanjiexsists', kanjiExsists)
+        if (!kanjiExsists.length) {
+            await database('kanji').insert({
+                k_id, 
+                k_utf,
+                meaning,
+                onyomi, 
+                kunyomi
+            })
+        }
+    
+        const kanjiAlreadySaved = await database('kanji_to_user').select().where('k_id', k_id).where('user_id', user_id);
+
+        if(!kanjiAlreadySaved.length) {
+            await database('kanji_to_user').insert({
+                id,
+                user_id,
+                k_id, 
+                studied: false
+            })
+            res.status(201).json({ message: `${k_utf} saved` })
+        } else {
+            await database('kanji_to_user').where('k_id', k_id).where('user_id', user_id).del();
+            res.status(202).json({ message: `${k_utf} unsaved` })
+        }
+    } catch (error) {
+        res.status(500).json({ error })
+    }
+})
+
+//ENDPOINTS NEEDED:
+//post- save kanji
+//delete- delete k-to-user pieces only
+//patch- toggle studied and not studied 
+//get- all saved kanji
 
 app.listen(port, () => {
     console.log(`${app.locals.title} is now running on http://localhost:${port} !`)
