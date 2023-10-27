@@ -114,6 +114,28 @@ app.post('/api/v1/kanji/', async (req, res) => {
     }
 })
 
+//PATCH ENDPOINTS
+// use when user toggles "studied" button on and off
+
+app.patch('/api/v1/kanji/', async (req, res) => {
+    const { user_id, k_id } = req.body;
+    
+    try {
+        const foundK = await database('kanji_to_user').select().where('user_id', user_id).where('k_id', k_id).first();
+
+        if(foundK) {
+            const flippedValue = !foundK.studied
+            const updatedK = await database('kanji_to_user').select().where('user_id', user_id).where('k_id', k_id).update('studied', flippedValue).returning('*')
+
+            res.status(200).json({data: updatedK});
+        }
+
+    } catch (error) {
+        res.status(500).json({ error })
+    }
+   
+})
+
 //ENDPOINTS NEEDED:
 //post- save kanji
 //patch- toggle studied and not studied 
