@@ -14,13 +14,24 @@ app.use(cors());
 app.use(express.json());
 
 //GET ENDPOINTS
-app.get('/api/v1/kanji/:user_id', async (req, res) => {
-    const { user_id } = req.body;
+app.get('/api/v1/kanji/:user_id/', async (req, res) => {
+    const { user_id } = req.params;
+
     try {
       const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
-    //   const savedKanji = await database('kanji').select().where().
 
-      res.status(200).json("hello");
+      const savedKanji = await database('kanji').returning('*')
+
+      const userKanji = savedKanji.reduce((foundK, kanji) => {
+        savedKtoU.forEach(k => {
+            if(k.k_id === kanji.k_id) {
+                foundK.push(kanji)
+            }
+        })
+        return foundK;
+      }, [])
+    //   console.log(userKanji)
+      res.status(200).json({ data: userKanji });
     } catch (error) {
       res.status(500).json({ error })
     }
@@ -66,6 +77,7 @@ app.post('/api/v1/user/', async (req, res) => {
     }
 })
 
+//use when user clickes save or unsave kanji button
 app.post('/api/v1/kanji/', async (req, res) => {
     const { user_id, k_id, k_utf, meaning, onyomi, kunyomi } = req.body;
     const id = uuidv4();
@@ -104,7 +116,6 @@ app.post('/api/v1/kanji/', async (req, res) => {
 
 //ENDPOINTS NEEDED:
 //post- save kanji
-//delete- delete k-to-user pieces only
 //patch- toggle studied and not studied 
 //get- all saved kanji
 
