@@ -18,27 +18,31 @@ app.get('/api/v1/kanji/:user_id/', async (req, res) => {
     const { user_id } = req.params;
 
     try {
-      const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
+        const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
 
-      const savedKanji = await database('kanji').returning('*')
+        const savedKanji = await database('kanji').returning('*')
 
-      const userKanji = savedKanji.reduce((foundK, kanji) => {
-        savedKtoU.forEach(k => {
-            if(k.k_id === kanji.k_id) {
-                foundK.push(kanji)
-            }
-        })
-        return foundK;
-      }, [])
-    //   console.log(userKanji)
-      res.status(200).json({ data: userKanji });
+        const userKanji = savedKanji.reduce((foundK, kanji) => {
+            savedKtoU.forEach(k => {
+                if (k.k_id === kanji.k_id) {
+                    foundK.push({
+                        ...kanji,
+                        studied: k.studied,
+                    })
+                }
+            })
+            return foundK;
+        }, [])
+
+        res.status(200).json({ data: userKanji });
     } catch (error) {
-      res.status(500).json({ error })
+        res.status(500).json({ error })
     }
-  });
+});
 
 //POST ENDPOINTS
 app.post('/api/v1/user/', async (req, res) => {
+    console.log(req)
     const { name, auth_id, email } = req.body;
     try {
         const userExists = await database('user_user').select().where('auth_id', auth_id);
@@ -59,7 +63,7 @@ app.post('/api/v1/user/', async (req, res) => {
                     auth_id,
                     email
                 }
-              });
+            });
         } else {
             res.status(200).json({
                 message: `User ${auth_id} found:`,
@@ -69,7 +73,7 @@ app.post('/api/v1/user/', async (req, res) => {
                     auth_id,
                     email
                 }
-              });
+            });
         }
 
     } catch (error) {
@@ -84,30 +88,64 @@ app.post('/api/v1/kanji/', async (req, res) => {
 
     try {
         const kanjiExsists = await database('kanji').select().where('k_id', k_id);
-        console.log('kanjiexsists', kanjiExsists)
+
         if (!kanjiExsists.length) {
             await database('kanji').insert({
-                k_id, 
+                k_id,
                 k_utf,
                 meaning,
-                onyomi, 
+                onyomi,
                 kunyomi
             })
         }
-    
+
         const kanjiAlreadySaved = await database('kanji_to_user').select().where('k_id', k_id).where('user_id', user_id);
 
-        if(!kanjiAlreadySaved.length) {
+        if (!kanjiAlreadySaved.length) {
             await database('kanji_to_user').insert({
                 id,
                 user_id,
-                k_id, 
+                k_id,
                 studied: false
             })
-            res.status(201).json({ message: `${k_utf} saved` })
+
+            const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
+
+            const savedKanji = await database('kanji').returning('*')
+
+            const userKanji = savedKanji.reduce((foundK, kanji) => {
+                savedKtoU.forEach(k => {
+                    if (k.k_id === kanji.k_id) {
+                        foundK.push({
+                            ...kanji,
+                            studied: k.studied,
+                        })
+                    }
+                })
+                return foundK;
+            }, [])
+
+            res.status(201).json({ data: userKanji });
         } else {
             await database('kanji_to_user').where('k_id', k_id).where('user_id', user_id).del();
-            res.status(202).json({ message: `${k_utf} unsaved` })
+
+            const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
+
+            const savedKanji = await database('kanji').returning('*')
+
+            const userKanji = savedKanji.reduce((foundK, kanji) => {
+                savedKtoU.forEach(k => {
+                    if (k.k_id === kanji.k_id) {
+                        foundK.push({
+                            ...kanji,
+                            studied: k.studied,
+                        })
+                    }
+                })
+                return foundK;
+            }, [])
+
+            res.status(202).json({ data: userKanji })
         }
     } catch (error) {
         res.status(500).json({ error })
@@ -119,21 +157,37 @@ app.post('/api/v1/kanji/', async (req, res) => {
 
 app.patch('/api/v1/kanji/', async (req, res) => {
     const { user_id, k_id } = req.body;
-    
+
     try {
         const foundK = await database('kanji_to_user').select().where('user_id', user_id).where('k_id', k_id).first();
 
-        if(foundK) {
+        if (foundK) {
             const flippedValue = !foundK.studied
             const updatedK = await database('kanji_to_user').select().where('user_id', user_id).where('k_id', k_id).update('studied', flippedValue).returning('*')
 
-            res.status(200).json({data: updatedK});
+            const savedKtoU = await database('kanji_to_user').select().where('user_id', user_id);
+
+            const savedKanji = await database('kanji').returning('*')
+
+            const userKanji = savedKanji.reduce((foundK, kanji) => {
+                savedKtoU.forEach(k => {
+                    if (k.k_id === kanji.k_id) {
+                        foundK.push({
+                            ...kanji,
+                            studied: k.studied,
+                        })
+                    }
+                })
+                return foundK;
+            }, [])
+
+            res.status(200).json({ data: userKanji });
         }
 
     } catch (error) {
         res.status(500).json({ error })
     }
-   
+
 })
 
 //ENDPOINTS NEEDED:
@@ -143,4 +197,4 @@ app.patch('/api/v1/kanji/', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`${app.locals.title} is now running on http://localhost:${port} !`)
-  });
+});
