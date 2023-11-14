@@ -8,6 +8,6 @@ services:
           name: kanji_panda
           property: connectionString
 
-buildCommand: npm install && npm run build
+buildCommand: npm install && knex migrate:latest
 
 startCommand: npm start
