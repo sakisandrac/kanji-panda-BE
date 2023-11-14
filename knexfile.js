@@ -27,9 +27,9 @@ module.exports = {
   staging: {
     client: 'postgresql',
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      database: 'kanji_panda',
+      user:     'postgres',
+      password: process.env.NODE_DB_PASS
     },
     pool: {
       min: 2,
@@ -43,9 +43,9 @@ module.exports = {
   production: {
     client: 'postgresql',
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      database: 'kanji_panda',
+      user:     'postgres',
+      password: process.env.NODE_DB_PASS
     },
     pool: {
       min: 2,
