@@ -42,10 +42,10 @@ module.exports = {
 
   production: {
     client: 'postgresql',
-    connection: {
+    connection: process.env.DATABASE_URL || {
       database: 'kanji_panda',
-      user:     'postgres',
-      password: process.env.NODE_DB_PASS
+      user: 'postgres',
+      password: process.env.NODE_DB_PASS,
     },
     pool: {
       min: 2,
