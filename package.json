@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm install",
+    "build": "npm install && knex migrate:latest",
     "start": "node server.js",
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
