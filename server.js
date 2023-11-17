@@ -14,6 +14,17 @@ app.use(cors());
 app.use(express.json());
 
 //GET ENDPOINTS
+
+app.get('/api/v1/user', async (req, res) => {
+    console.log('hello')
+    try {
+        const user = await database('user_user').returning('*')
+        res.status(200).json({ data: user});
+    } catch (error) {
+        res.status(500).json({ error })
+    }
+})
+
 app.get('/api/v1/kanji/:user_id/', async (req, res) => {
     const { user_id } = req.params;
 
