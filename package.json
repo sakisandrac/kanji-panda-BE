@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm install",
+    "build": "npm install && knex migrate:latest --knexfile ./knexfile.js",
     "start": "node server.js",
-    "migrate": "node migrate.js",
+    "migrate": "knex migrate:latest --knexfile ./knexfile.js",
     "seed": "knex seed:run",
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"

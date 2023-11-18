@@ -15,22 +15,22 @@ const knexConfig = require('./knexfile');
 //MIDDLEWARE
 app.use(cors());
 app.use(express.json());
-const knexInstance = knex(knexConfig[environment]);
+// const knexInstance = knex(knexConfig[environment]);
 
-async function runMigrations() {
-    try {
-      await knexInstance.migrate.latest({
-        directory: './db/migrations',
-      });
-      console.log('Migrations have run successfully!');
-      process.exit(0);
-    } catch (error) {
-      console.error('Error running migrations:', error);
-      process.exit(1);
-    }
-  }
+// async function runMigrations() {
+//     try {
+//       await knexInstance.migrate.latest({
+//         directory: './db/migrations',
+//       });
+//       console.log('Migrations have run successfully!');
+//       process.exit(0);
+//     } catch (error) {
+//       console.error('Error running migrations:', error);
+//       process.exit(1);
+//     }
+//   }
   
-  runMigrations();
+//   runMigrations();
 
 //GET ENDPOINTS
 
