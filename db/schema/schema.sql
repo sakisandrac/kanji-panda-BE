@@ -1,0 +1,35 @@
+-- Create tables
+CREATE TABLE user_user (
+    user_id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255),
+    auth_id VARCHAR(255),
+    email VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE kanji (
+    k_id VARCHAR(255) PRIMARY KEY,
+    k_utf VARCHAR(255),
+    meaning VARCHAR(255),
+    kunyomi VARCHAR(255),
+    onyomi VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE kanji_to_user (
+    id VARCHAR(255) PRIMARY KEY,
+    user_id VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES user_user(user_id),
+    k_id VARCHAR(255),
+    FOREIGN KEY (k_id) REFERENCES kanji(k_id),
+    studied BOOLEAN,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Drop tables
+DROP TABLE IF EXISTS kanji_to_user;
+DROP TABLE IF EXISTS kanji;
+DROP TABLE IF EXISTS user_user;
