@@ -8,11 +8,18 @@ module.exports = {
 
   development: {
     client: 'pg',
+    // connection: {
+    //   host: 'localhost',
+    //   port: '5433',
+    //   database: 'kanji_panda',
+    //   user:     'postgres',
+    //   password: process.env.NODE_DB_PASS
+    // },
     connection: {
-      host: 'localhost',
-      port: '5433',
+      host: 'dpg-clc10a54lnec73d18o3g-a',
+      port: '5432',
       database: 'kanji_panda',
-      user:     'postgres',
+      user:     'kanji_panda_user',
       password: process.env.NODE_DB_PASS
     },
     migrations: {
