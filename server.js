@@ -9,9 +9,28 @@ app.locals = { title: 'Kanji Panda API' }
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 
+const knex = require('knex');
+const knexConfig = require('./knexfile');
+
 //MIDDLEWARE
 app.use(cors());
 app.use(express.json());
+const knexInstance = knex(knexConfig[environment]);
+
+async function runMigrations() {
+    try {
+      await knexInstance.migrate.latest({
+        directory: './path/to/migrations', // Directory where your migration files are located
+      });
+      console.log('Migrations have run successfully!');
+      process.exit(0); // Exit after running migrations
+    } catch (error) {
+      console.error('Error running migrations:', error);
+      process.exit(1); // Exit with error status
+    }
+  }
+  
+  runMigrations();
 
 //GET ENDPOINTS
 

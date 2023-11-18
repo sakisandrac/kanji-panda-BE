@@ -6,11 +6,10 @@
   "scripts": {
     "build": "npm install",
     "start": "node server.js",
-    "migrate": "knex migrate:latest",
+    "migrate": "node migrate.js",
     "seed": "knex seed:run",
     "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate:latest": "./node_modules/.bin/knex --knexfile ./knexfile.js migrate:latest"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
