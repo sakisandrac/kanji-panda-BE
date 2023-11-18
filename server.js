@@ -20,13 +20,13 @@ const knexInstance = knex(knexConfig[environment]);
 async function runMigrations() {
     try {
       await knexInstance.migrate.latest({
-        directory: './path/to/migrations', // Directory where your migration files are located
+        directory: './db/migrations',
       });
       console.log('Migrations have run successfully!');
-      process.exit(0); // Exit after running migrations
+      process.exit(0);
     } catch (error) {
       console.error('Error running migrations:', error);
-      process.exit(1); // Exit with error status
+      process.exit(1);
     }
   }
   
